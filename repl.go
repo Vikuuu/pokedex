@@ -57,5 +57,30 @@ func getCommands() map[string]cliCommands {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"map": {
+			name:        "map",
+			description: "Display next 20 locations name.",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays the previous 20 locations name.",
+			callback:    commandMapb,
+		},
 	}
+}
+
+type config struct {
+	Next     *string
+	Previous *string
+}
+
+type areaNames struct {
+	Count    int     `json:"count"`
+	Next     *string `json:"next"`
+	Previous *string `json:"previous"`
+	Results  []struct {
+		Name string `json:"name"`
+		Url  string `json:"url"`
+	} `json:"results"`
 }
