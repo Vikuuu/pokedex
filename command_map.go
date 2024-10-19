@@ -3,33 +3,44 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"net/url"
+
+	"github.com/Vikuuu/pokedex/internal/pokeapi"
 )
 
-func commandMap() error {
-	fullURL := BASE_LOCATION_URL
-
-	if conf.Next != nil {
-		nextUrl, err := url.Parse(*conf.Next)
-		if err != nil {
-			return err
-		}
-		query := nextUrl.RawQuery
-		fullURL += "?" + query
-	}
-
-	areas, err := pokeApi(fullURL)
+func commandMapf(cfg *config) error {
+	locationResp, err := pokeapi.LocPokeApi(cfg.Next)
 	if err != nil {
 		return err
 	}
 
-	for _, areaName := range areas.Results {
-		fmt.Println(areaName.Name)
+	cfg.Next = locationResp.Next
+	cfg.Previous = locationResp.Previous
+
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
 	}
 
-	conf.Next = areas.Next
-	conf.Previous = areas.Previous
+	return nil
+}
+
+func commandMapb(cfg *config) error {
+	if cfg.Previous == nil {
+		return errors.New("you're already on the first page")
+	}
+
+	locationResp, err := pokeapi.LocPokeApi(cfg.Previous)
+	if err != nil {
+		return err
+	}
+
+	cfg.Next = locationResp.Next
+	cfg.Previous = locationResp.Previous
+
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
+	}
 
 	return nil
 }
