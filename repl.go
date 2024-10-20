@@ -27,9 +27,9 @@ func startRepl(cfg *config) {
 		}
 
 		commandName := inputs[0]
-		commandArgs := ""
+		commandArgs := []string{}
 		if len(inputs) > 1 {
-			commandArgs = inputs[1]
+			commandArgs = inputs[1:]
 		}
 
 		cmd, exists := getCommands()[commandName]
@@ -38,7 +38,7 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		err := cmd.callback(cfg, commandArgs)
+		err := cmd.callback(cfg, commandArgs...)
 		if err != nil {
 			fmt.Println("Error executing command: ", err)
 		}
@@ -54,7 +54,7 @@ func cleanInput(text string) []string {
 type cliCommands struct {
 	name        string
 	description string
-	callback    func(*config, string) error
+	callback    func(*config, ...string) error
 }
 
 func getCommands() map[string]cliCommands {
