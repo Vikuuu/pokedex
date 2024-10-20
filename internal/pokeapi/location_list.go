@@ -17,7 +17,7 @@ func (c *Client) LocPokeApi(url *string) (areaNames, error) {
 		locationResp := areaNames{}
 		err := json.Unmarshal(val, &locationResp)
 		if err != nil {
-			return areaNames{}, nil
+			return areaNames{}, err
 		}
 
 		return locationResp, nil
