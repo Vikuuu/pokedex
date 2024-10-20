@@ -7,10 +7,11 @@ import (
 	"fmt"
 
 	"github.com/Vikuuu/pokedex/internal/pokeapi"
+	"github.com/Vikuuu/pokedex/internal/pokecache"
 )
 
-func commandMapf(cfg *config) error {
-	locationResp, err := pokeapi.LocPokeApi(cfg.Next)
+func commandMapf(cfg *config, cP *pokecache.Cache) error {
+	locationResp, err := pokeapi.LocPokeApi(cfg.Next, cP)
 	if err != nil {
 		return err
 	}
@@ -25,12 +26,12 @@ func commandMapf(cfg *config) error {
 	return nil
 }
 
-func commandMapb(cfg *config) error {
+func commandMapb(cfg *config, cP *pokecache.Cache) error {
 	if cfg.Previous == nil {
 		return errors.New("you're already on the first page")
 	}
 
-	locationResp, err := pokeapi.LocPokeApi(cfg.Previous)
+	locationResp, err := pokeapi.LocPokeApi(cfg.Previous, cP)
 	if err != nil {
 		return err
 	}

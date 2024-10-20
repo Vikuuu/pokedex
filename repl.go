@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/Vikuuu/pokedex/internal/pokecache"
 )
 
 type config struct {
@@ -12,7 +14,7 @@ type config struct {
 	Previous *string
 }
 
-func startRepl(cfg *config) {
+func startRepl(cfg *config, cP *pokecache.Cache) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for true {
 		fmt.Print("pokedex > ")
@@ -31,7 +33,7 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		err := cmd.callback(cfg)
+		err := cmd.callback(cfg, cP)
 		if err != nil {
 			fmt.Println("Error executing command: ", err)
 		}
@@ -47,7 +49,7 @@ func cleanInput(text string) []string {
 type cliCommands struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, *pokecache.Cache) error
 }
 
 func getCommands() map[string]cliCommands {
