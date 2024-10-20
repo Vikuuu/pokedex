@@ -3,11 +3,14 @@ package main
 import (
 	"time"
 
-	"github.com/Vikuuu/pokedex/internal/pokecache"
+	"github.com/Vikuuu/pokedex/internal/pokeapi"
 )
 
 func main() {
-	cfg := &config{}
-	cP := *pokecache.NewCache(5 * time.Minute)
-	startRepl(cfg, &cP)
+	pokeClient := pokeapi.NewClient(5*time.Second, 5*time.Minute)
+	cfg := &config{
+		pokeapiClient: pokeClient,
+	}
+
+	startRepl(cfg)
 }

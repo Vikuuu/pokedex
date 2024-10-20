@@ -5,47 +5,47 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-
-	"github.com/Vikuuu/pokedex/internal/pokecache"
 )
 
-func LocPokeApi(
-	url *string,
-	cacheP *pokecache.Cache,
-) (areaNames, error) {
+func (c *Client) LocPokeApi(url *string) (areaNames, error) {
 	fullURL := baseURL + "/location-area"
 	if url != nil {
 		fullURL = *url
 	}
-	var areas areaNames
 
-	if _, found := cacheP.Get(fullURL); !found {
-		res, err := http.Get(fullURL)
+	if val, ok := c.cache.Get(fullURL); ok {
+		locationResp := areaNames{}
+		err := json.Unmarshal(val, &locationResp)
 		if err != nil {
-			return areaNames{}, err
-		}
-		defer res.Body.Close()
-
-		data, err := io.ReadAll(res.Body)
-		if err != nil {
-			return areaNames{}, err
+			return areaNames{}, nil
 		}
 
-		// Added the result in Cache
-		cacheP.Add(fullURL, data)
-
-		err = json.Unmarshal(data, &areas)
-		if err != nil {
-			return areaNames{}, err
-		}
-		return areas, nil
+		return locationResp, nil
 	}
 
-	data, _ := cacheP.Get(fullURL)
-	err := json.Unmarshal(data, &areas)
+	req, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
 		return areaNames{}, err
 	}
 
-	return areas, nil
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return areaNames{}, err
+	}
+
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return areaNames{}, err
+	}
+
+	locationResp := areaNames{}
+	err = json.Unmarshal(data, &locationResp)
+	if err != nil {
+		return areaNames{}, err
+	}
+
+	c.cache.Add(fullURL, data)
+	return locationResp, nil
 }
