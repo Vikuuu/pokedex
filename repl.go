@@ -13,6 +13,7 @@ type config struct {
 	pokeapiClient pokeapi.Client
 	Next          *string
 	Previous      *string
+	Pokemon       map[string]pokeapi.Pokemon
 }
 
 func startRepl(cfg *config) {
@@ -38,11 +39,7 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		pokedex := &pokedex{
-			Pokemon: make(map[string]pokeapi.Pokemon),
-		}
-
-		err := cmd.callback(cfg, pokedex, commandArgs...)
+		err := cmd.callback(cfg, commandArgs...)
 		if err != nil {
 			fmt.Println("Error executing command: ", err)
 		}
@@ -58,7 +55,7 @@ func cleanInput(text string) []string {
 type cliCommands struct {
 	name        string
 	description string
-	callback    func(*config, *pokedex, ...string) error
+	callback    func(*config, ...string) error
 }
 
 func getCommands() map[string]cliCommands {
@@ -94,8 +91,4 @@ func getCommands() map[string]cliCommands {
 			callback:    commandCatch,
 		},
 	}
-}
-
-type pokedex struct {
-	Pokemon map[string]pokeapi.Pokemon
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func commandCatch(cfg *config, pokedex *pokedex, args ...string) error {
+func commandCatch(cfg *config, args ...string) error {
 	if len(args) != 1 {
 		return errors.New("you must enter a pokemon name")
 	}
@@ -23,6 +23,6 @@ func commandCatch(cfg *config, pokedex *pokedex, args ...string) error {
 	}
 
 	fmt.Printf("\n%s was caught\n", name)
-	pokedex.Pokemon[name] = pokemonResp
+	cfg.Pokemon[name] = pokemonResp
 	return nil
 }
