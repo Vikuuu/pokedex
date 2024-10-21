@@ -38,7 +38,11 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		err := cmd.callback(cfg, commandArgs...)
+		pokedex := &pokedex{
+			Pokemon: make(map[string]pokeapi.Pokemon),
+		}
+
+		err := cmd.callback(cfg, pokedex, commandArgs...)
 		if err != nil {
 			fmt.Println("Error executing command: ", err)
 		}
@@ -54,7 +58,7 @@ func cleanInput(text string) []string {
 type cliCommands struct {
 	name        string
 	description string
-	callback    func(*config, ...string) error
+	callback    func(*config, *pokedex, ...string) error
 }
 
 func getCommands() map[string]cliCommands {
@@ -80,9 +84,18 @@ func getCommands() map[string]cliCommands {
 			callback:    commandMapb,
 		},
 		"explore": {
-			name:        "explore",
+			name:        "explore <location_name>",
 			description: "Displays the list of pokemon in the area.",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch <pokemon_name>",
+			description: "Tries to catch the pokemon named.",
+			callback:    commandCatch,
+		},
 	}
+}
+
+type pokedex struct {
+	Pokemon map[string]pokeapi.Pokemon
 }

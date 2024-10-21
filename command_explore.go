@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func commandExplore(cfg *config, args ...string) error {
+func commandExplore(cfg *config, pokedex *pokedex, args ...string) error {
 	if len(args) != 1 {
 		return errors.New("you must enter a location name")
 	}
